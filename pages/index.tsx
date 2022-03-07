@@ -1,13 +1,19 @@
 import type { NextPage } from 'next'
+import { withUrqlClient } from 'next-urql'
 import { NavBar } from '../components/Navbar'
+import { usePostsQuery } from '../generated/graphql'
+import { createUrqlClient } from '../utils/createUrqlClient'
 
-const Home: NextPage = () => {
+const Index: NextPage = () => {
+    const [{ data }] = usePostsQuery();
     return (
         <>
             <NavBar />
             <p>Hello World</p>
+            {!data ? null : data.posts.map((p) => <div key={p.id}>{p.title}</div>)}
         </>
     )
 }
 
-export default Home
+// Component is Server Side Rendered on the first Time
+export default withUrqlClient(createUrqlClient, { ssr: true })(Index)
